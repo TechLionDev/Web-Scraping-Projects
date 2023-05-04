@@ -6,10 +6,15 @@ Note: All scrapers in this repository were created using Node.js, Axios, and Che
 
 ## 📂 List of Folders and Their Contents
 
-- **/macys:** A scraper for extracting product information from Macy's.
-- **/target:** Coming Soon
-- **/walmart:** Coming Soon
-- **/bestbuy:** Coming Soon
+- **/Macy's:**
+- **/Target:** 🚧 Coming Soon 🚧
+- **/Walmart:** 🚧 Coming Soon 🚧
+- **/BestBuy:** 🚧 Coming Soon 🚧
+- **/Nordstrom:** 🚧 Coming Soon 🚧
+- **/Skechers:** 🚧 Coming Soon 🚧
+- **/Lowe's:** 🚧 Coming Soon 🚧
+- **/HomeDepot:** 🚧 Coming Soon 🚧
+- **/Reddit:** 🚧 Coming Soon 🚧
 
 ## 🚀 Getting Started
 
@@ -28,6 +33,18 @@ node scraper.js
 
 
 Note: Replace `scraper.js` with the name of the scraper file in the folder you want to use.
+
+## 🤝 Contributing
+
+We welcome contributions to this repository! To contribute, please follow these steps:
+
+1. Fork this repository.
+2. Create a new branch for your feature or bug fix: `git checkout -b new-feature`.
+3. Make your changes and commit them with a descriptive commit message.
+4. Push your changes to your fork: `git push origin new-feature`.
+5. Submit a pull request to this repository.
+
+Please ensure that your code is properly formatted, and works as expected before submitting a pull request.
 
 ## 📄 License
 
