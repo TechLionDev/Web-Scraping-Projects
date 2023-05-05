@@ -41,7 +41,40 @@ let userAgents = [
 ];
 let urls = [
     //   Cell Phones
-    'https://www.bestbuy.com/site/mobile-cell-phones/all-cell-phones/pcmcat1625163553254.c?id=pcmcat1625163553254',
+    {
+        base: 'https://www.bestbuy.com/site/mobile-cell-phones/all-cell-phones/pcmcat1625163553254.c?id=pcmcat1625163553254',
+        other: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=pcmcat1625163553254&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=pcmcat1625163553254_categoryid%24abcat0800000&type=page&usc=All%20Categories&cp='
+    },
+    // Small Kitchen Appliances
+    {
+        base: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=abcat0912000&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24abcat0912000&type=page&usc=All%20Categories',
+        other: 'www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=abcat0912000&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24abcat0912000&type=page&usc=All%20Categories&cp='
+    },
+    // TVs
+    {
+        base: 'https://www.bestbuy.com/site/tvs/all-flat-screen-tvs/abcat0101001.c?id=abcat0101001',
+        other: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=abcat0101001&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24abcat0101001&type=page&usc=All%20Categories&cp='
+    },
+    // Tablets
+    {
+        base: 'https://www.bestbuy.com/site/ipad-tablets-ereaders/tablets/pcmcat209000050008.c?id=pcmcat209000050008',
+        other: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=pcmcat209000050008&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24pcmcat209000050008&type=page&usc=All%20Categories&cp='
+    },
+    // Laptops
+    {
+        base: 'https://www.bestbuy.com/site/laptop-computers/all-laptops/pcmcat138500050001.c?id=pcmcat138500050001',
+        other: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=pcmcat138500050001&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24pcmcat138500050001&type=page&usc=All%20Categories&cp='
+    },
+    // Desktops
+    {
+        base: 'https://www.bestbuy.com/site/desktop-computers/all-desktops/pcmcat143400050013.c?id=pcmcat143400050013',
+        other: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=pcmcat143400050013&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24pcmcat143400050013&type=page&usc=All%20Categories&cp='
+    },
+    // Video Games
+    {
+        base: 'https://www.bestbuy.com/site/video-games/all-video-games/pcmcat1487698928729.c?id=pcmcat1487698928729',
+        other: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=pcmcat1487698928729&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24pcmcat1487698928729&type=page&usc=All%20Categories&cp='
+    }
 ];
 
 const productLinks = [];
@@ -49,20 +82,21 @@ const productLinks = [];
 async function main() {
     for (let i = 0; i < urls.length; i++) {
         const url = urls[i];
-        await crawl(url);
+        await crawl(url.base, url.other);
     }
+    console.log(`A grand total of ${productLinks.length} products were found and saved to products.json`);
 }
 
-async function crawl(url) {
+async function crawl(base, other) {
     try {
-        await axios.get(url, {
+        await axios.get(base, {
             'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
         }).then(async (response) => {
             const $ = cheerio.load(response.data);
             const totalPgs = $('ol.paging-list > li:last-child').text().trim();
             for (let i = 1; i <= parseInt(totalPgs); i++) {
                 console.log(`==${i}/${totalPgs}==`);
-                await crawlPage(i == 1 ? url : `https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=pcmcat1625163553254&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=pcmcat1625163553254_categoryid%24abcat0800000&type=page&usc=All%20Categories&cp=${i}`)
+                await crawlPage(i == 1 ? base : (other + i))
             }
             await fs.writeFile('products.json', JSON.stringify(productLinks), (error) => {
                 if (error) {

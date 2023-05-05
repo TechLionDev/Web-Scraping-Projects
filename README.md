@@ -7,8 +7,8 @@ Note: All scrapers in this repository were created using Node.js, Axios, and Che
 ## 📂 List of Folders and Their Contents
 
 - **/Macy's:**
-- **/BestBuy:** 🚧 Coming Soon 🚧
-- **/Amazon:** 🧪 Beta 🧪
+- **/BestBuy:** 
+- **/Amazon:** 🚧 Coming Soon 🚧
 
 ## 🚀 Getting Started
 
