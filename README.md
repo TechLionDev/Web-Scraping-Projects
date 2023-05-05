@@ -7,14 +7,8 @@ Note: All scrapers in this repository were created using Node.js, Axios, and Che
 ## 📂 List of Folders and Their Contents
 
 - **/Macy's:**
-- **/Target:** 🚧 Coming Soon 🚧
-- **/Walmart:** 🚧 Coming Soon 🚧
 - **/BestBuy:** 🚧 Coming Soon 🚧
-- **/Nordstrom:** 🚧 Coming Soon 🚧
-- **/Skechers:** 🚧 Coming Soon 🚧
-- **/Lowe's:** 🚧 Coming Soon 🚧
-- **/HomeDepot:** 🚧 Coming Soon 🚧
-- **/Reddit:** 🚧 Coming Soon 🚧
+- **/Amazon:** 🧪 Beta 🧪
 
 ## 🚀 Getting Started
 
