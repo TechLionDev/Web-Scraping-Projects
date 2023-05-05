@@ -45,11 +45,6 @@ let urls = [
         base: 'https://www.bestbuy.com/site/mobile-cell-phones/all-cell-phones/pcmcat1625163553254.c?id=pcmcat1625163553254',
         other: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=pcmcat1625163553254&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=pcmcat1625163553254_categoryid%24abcat0800000&type=page&usc=All%20Categories&cp='
     },
-    // Small Kitchen Appliances
-    {
-        base: 'https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=abcat0912000&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24abcat0912000&type=page&usc=All%20Categories',
-        other: 'www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=abcat0912000&id=pcat17071&iht=n&ks=960&list=y&sc=Global&st=categoryid%24abcat0912000&type=page&usc=All%20Categories&cp='
-    },
     // TVs
     {
         base: 'https://www.bestbuy.com/site/tvs/all-flat-screen-tvs/abcat0101001.c?id=abcat0101001',
