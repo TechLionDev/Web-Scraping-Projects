@@ -95,14 +95,15 @@ async function crawl(base, other) {
             const $ = cheerio.load(response.data);
             const totalPgs = $('ol.paging-list > li:last-child').text().trim();
             for (let i = 1; i <= parseInt(totalPgs); i++) {
-                console.log(`==${i}/${totalPgs}==`);
+                const category = $('ol > li.crumb-list-item:last-child').text().trim();
+                console.log(`==${i}/${totalPgs}== in ${category}`);
                 await crawlPage(i == 1 ? base : (other + i))
             }
             await fs.writeFile('products.json', JSON.stringify(productLinks), (error) => {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(`A total of ${productLinks.length} products saved to products.json`);
+                    console.log(`${productLinks.length} products saved to products.json`);
                 }
             });
         })
@@ -122,21 +123,15 @@ async function crawlPage(url) {
                 const productName = $(element).find('.sku-title').text().trim();
                 const productUrl = 'https://www.bestbuy.com' + $(element).find('.sku-title > a').attr('href');
                 const productImage = $(element).find('.product-image').attr('src');
+                const category = $('ol > li.crumb-list-item:last-child').text().trim();
                 productLinks.push({
                     name: productName,
                     price: productPrice,
                     url: productUrl,
-                    image: productImage
+                    image: productImage,
+                    category: category
                 })
             })
-        }).finally(async () => {
-            await fs.writeFile('products.json', JSON.stringify(productLinks), (error) => {
-                if (error) {
-                    console.log(error);
-                } else {
-                    console.log(`${productLinks.length} products saved to products.json`);
-                }
-            });
         })
     } catch (error) {
         console.log(`Failed To Crawl ${url}`);
