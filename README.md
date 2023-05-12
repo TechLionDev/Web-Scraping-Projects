@@ -8,6 +8,7 @@ Note: All scrapers in this repository were created using Node.js, Axios, and Che
 
 - **/Macy's:** 
 - **/BestBuy:**
+- **/Amazon:** 
 
 ## 🚀 Getting Started
 
