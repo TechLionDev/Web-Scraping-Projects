@@ -6,9 +6,9 @@ Note: All scrapers in this repository were created using Node.js, Axios, and Che
 
 ## 📂 List of Folders and Their Contents
 
-- **/Macy's:** 
-- **/BestBuy:**
-- **/Amazon:** 
+- **/Macy's:** All URLs in Code
+- **/BestBuy:** All URLs in Code
+- **/Amazon:** Need to add your own URLs
 
 ## 🚀 Getting Started
 
