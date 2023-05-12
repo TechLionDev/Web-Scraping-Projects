@@ -87,6 +87,9 @@ async function crawlProductPage(url, brand) {
         const $ = await cheerio.load(res.data);
         let storeFrontURL = $('#sellerProfileTriggerId').attr('href');
         console.log(`SFR: '${storeFrontURL}'`);
+        if(storeFrontURL === undefined) {
+            return
+        }
         if (!storeFrontURL) {
             await crawlProductPage(url, brand)
         }
