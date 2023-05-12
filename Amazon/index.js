@@ -41,7 +41,14 @@ let userAgents = [
 ];
 
 let urls = [
-    'https://www.amazon.com/s?rh=n%3A565108&fs=true&ref=lp_565108_sar',
+    // Women's Handbags
+    'https://www.amazon.com/s?rh=n%3A15743631&fs=true&ref=lp_15743631_sar',
+    // Men's Wrist Watches
+    'https://www.amazon.com/b/?node=6358540011&ref_=Oct_d_odnav_d_6358539011_0&pd_rd_w=qYs2E&content-id=amzn1.sym.da9d5993-999b-41a1-9ebb-f85ff6fd0fb0&pf_rd_p=da9d5993-999b-41a1-9ebb-f85ff6fd0fb0&pf_rd_r=TW7WJSFRZW1ZNC4ZWNDE&pd_rd_wg=eXMij&pd_rd_r=124891a6-e313-4449-87f2-f0c477c9784a',
+    // Men's Activewear
+    'https://www.amazon.com/s?rh=n%3A3455821&fs=true&ref=lp_3455821_sar',
+    // Men's Smartwatches
+    'https://www.amazon.com/s?rh=n%3A14130292011&fs=true&ref=lp_14130292011_sar',
 ]
 
 const productLinks = [];
@@ -58,10 +65,10 @@ async function crawl(url) {
             'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
         }
     }).then(async res => {
-        let $ = cheerio.load(res.data);
-        let hasPages = $('span.s-pagination-strip').text() !== '';
+        let $ = await cheerio.load(res.data);
+        let hasPages = await $('span.s-pagination-strip').text() !== '';
         if (hasPages) {
-            let totalPgs = parseInt($('span.s-pagination-item.s-pagination-disabled:not(.s-pagination-previous)').text());
+            let totalPgs = await parseInt($('span.s-pagination-item.s-pagination-disabled:not(.s-pagination-previous)').text());
             console.log(`==Found ${totalPgs} pages on URL No. ${urls.indexOf(url)+1}==`);
             for (let page = 1; page <= totalPgs; page++) {
                 console.log(`==Crawling page No. ${page} of ${totalPgs}==`);
@@ -88,7 +95,7 @@ async function crawlPage(url, pageNum) {
             'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
         }
     }).then(async res => {
-        const $ = cheerio.load(res.data);
+        const $ = await cheerio.load(res.data);
         $('div[data-component-type="s-search-result"]').each(async (i, el) => {
             let productLink = await $(el).find('a.a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal').attr('href');
             let productName = await $(el).find('a.a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal').text();
@@ -113,14 +120,17 @@ async function crawlPage(url, pageNum) {
                 image: productImage
             })
         })
+        await fs.writeFile('products.json', JSON.stringify(productLinks), (error) => {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log(`${productLinks.length} products saved to products.json`);
+            }
+        });
+    }).catch(err => {
+        
     })
-    await fs.writeFile('products.json', JSON.stringify(productLinks), (error) => {
-        if (error) {
-            console.log(error);
-        } else {
-            console.log(`${productLinks.length} products saved to products.json`);
-        }
-    });
+
 }
 
 main();
