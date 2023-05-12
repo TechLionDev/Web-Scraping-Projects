@@ -40,7 +40,7 @@ let userAgents = [
 ];
 let brandsWithTotal = [];
 async function main() {
-    let brands = await axios.get('https://script.google.com/macros/s/AKfycbz9zJGGoaZmsqCMiNIbux3rfnKe236z2_d2jc3hWfKGnbgXhi-13NbfySWm_rlLpvaw/exec').then(res => res.data.brands.sort());
+    let brands = await axios.get('https://script.google.com/macros/s/AKfycbzwrqVcjppFwVz8kPdY2WYImNm7jufs1f5xywjXLVNJm9y6gwzHXyvfqt8gmrR54LaB/exec').then(res => res.data.brands.sort());
     let newBrands = [];
     for (let brandInx = 0; brandInx < brands.length; brandInx++) {
         if (newBrands.indexOf(brands[brandInx][0]) === -1) {
@@ -52,7 +52,7 @@ async function main() {
         let url = `https://amazon.com/s?k=${encodedParam}&ref=nb_sb_noss_2`;
         await crawl(url, brand);
         console.log(`Done crawling ${brand}`);
-        await axios.post('https://script.google.com/macros/s/AKfycbz9zJGGoaZmsqCMiNIbux3rfnKe236z2_d2jc3hWfKGnbgXhi-13NbfySWm_rlLpvaw/exec', {
+        await axios.post('https://script.google.com/macros/s/AKfycbzwrqVcjppFwVz8kPdY2WYImNm7jufs1f5xywjXLVNJm9y6gwzHXyvfqt8gmrR54LaB/exec', {
             brands: brandsWithTotal
         })
     }
@@ -89,6 +89,9 @@ async function crawlProductPage(url, brand) {
         console.log(`SFR: '${storeFrontURL}'`);
         if (!storeFrontURL) {
             await crawlProductPage(url, brand)
+        }
+        if (storeFrontURL == undefined) { 
+            return;
         }
         await axios.get('https://www.amazon.com' + storeFrontURL, {
             'headers': {
