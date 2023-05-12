@@ -9,6 +9,7 @@ Note: All scrapers in this repository were created using Node.js, Axios, and Che
 - **/Macy's:** All URLs in Code
 - **/BestBuy:** All URLs in Code
 - **/Amazon:** Need to add your own URLs
+- **/AmazonCo:** Automatic for each company/Storefront ⚠️⚠️ BETA: MAY MALFUNCTION⚠️⚠️
 
 ## 🚀 Getting Started
 
