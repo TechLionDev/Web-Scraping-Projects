@@ -48,6 +48,9 @@ async function main() {
         }
     }
     for (let brand of newBrands) {
+        if (brand == 'AA Ignition') {
+            continue;
+        }
         let encodedParam = encodeURIComponent(brand);
         let url = `https://amazon.com/s?k=${encodedParam}&ref=nb_sb_noss_2`;
         await crawl(url, brand);
