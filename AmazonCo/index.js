@@ -48,9 +48,6 @@ async function main() {
         }
     }
     for (let brand of newBrands) {
-        if (brand == 'AA Ignition') {
-            continue;
-        }
         let encodedParam = encodeURIComponent(brand);
         let url = `https://amazon.com/s?k=${encodedParam}&ref=nb_sb_noss_2`;
         await crawl(url, brand);
@@ -93,9 +90,7 @@ async function crawlProductPage(url, brand) {
         if (!storeFrontURL) {
             await crawlProductPage(url, brand)
         }
-        if (storeFrontURL == undefined) { 
-            return;
-        }
+        
         await axios.get('https://www.amazon.com' + storeFrontURL, {
             'headers': {
                 'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
