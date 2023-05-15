@@ -64,7 +64,8 @@ async function crawl(url, brand) {
     await axios.get(url, {
         'headers': {
             'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
-        }
+        },
+        timeout: 30000
     }).then(async res => {
         let $ = await cheerio.load(res.data);
         await $('div[data-component-type="s-search-result"]').each(async (i, el) => {
@@ -82,7 +83,8 @@ async function crawlProductPage(url, brand) {
     await axios.get(url, {
         'headers': {
             'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
-        }
+        },
+        timeout: 30000
     }).then(async res => {
         const $ = await cheerio.load(res.data);
         let storeFrontURL = $('#sellerProfileTriggerId').attr('href');
@@ -90,25 +92,27 @@ async function crawlProductPage(url, brand) {
         if(storeFrontURL === undefined) {
             return
         }
-        if (!storeFrontURL) {
-            await crawlProductPage(url, brand)
-        }
+        // if (!storeFrontURL) {
+        //     await crawlProductPage(url, brand)
+        // }
         
         await axios.get('https://www.amazon.com' + storeFrontURL, {
             'headers': {
                 'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
-            }
+            },
+            timeout: 30000
         }).then(async res => {
             const $ = await cheerio.load(res.data);
             let finalStorefrontURL = 'https://www.amazon.com' + $('#seller-info-storefront-link').find('a').attr('href');
             console.log(`FSFR: '${finalStorefrontURL}'`);
-            if (!finalStorefrontURL) {
-                await crawlProductPage(url, brand)
-            }
+            // if (!finalStorefrontURL) {
+            //     await crawlProductPage(url, brand)
+            // }
             await axios.get(finalStorefrontURL, {
                 'headers': {
                     'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
-                }
+                },
+                timeout: 30000
             }).then(async res => {
                 const $ = await cheerio.load(res.data);
                 let txt = $('#search > span > div > h1 > div > div.sg-col-14-of-20.sg-col-18-of-24.sg-col.s-breadcrumb.sg-col-10-of-16.sg-col-6-of-12 > div > div > span').text();

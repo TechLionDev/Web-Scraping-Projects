@@ -9,7 +9,11 @@ Note: All scrapers in this repository were created using Node.js, Axios, and Che
 - **/Macy's:** All URLs in Code
 - **/BestBuy:** All URLs in Code
 - **/Amazon:** Need to add your own URLs
-- **/AmazonCo:** Automatic for each company/Storefront ⚠️⚠️ BETA: MAY MALFUNCTION⚠️⚠️
+- **/AmazonCo:** Automatic for each company/Storefront. Must Use following run command so no crash:
+
+```
+node --max-old-space-size=4096 index.js
+```
 
 ## 🚀 Getting Started
 
@@ -19,13 +23,11 @@ To use these web scrapers, you'll need to have Node.js installed on your compute
 yarn install
 ```
 
-
 Once the required packages are installed, you can run the scraper by executing the following command in your terminal:
 
 ```sh
 node scraper.js
 ```
-
 
 Note: Replace `scraper.js` with the name of the scraper file in the folder you want to use.
 
