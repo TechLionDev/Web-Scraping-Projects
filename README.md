@@ -12,7 +12,7 @@ Note: All scrapers in this repository were created using Node.js, Axios, and Che
 - **/AmazonCo:** Automatic for each company/Storefront. Must Use following run command so no crash:
 
 ```
-node --max-old-space-size=4096 index.js
+node --max-old-space-size=8192 index.js
 ```
 
 ## 🚀 Getting Started

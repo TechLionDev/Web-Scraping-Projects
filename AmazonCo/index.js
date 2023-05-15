@@ -1,6 +1,11 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
+function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+}
+
 let userAgents = [
     'Mozilla/5.0 (iPhone; CPU iPhone OS 8_4_9; like Mac OS X) AppleWebKit/603.33 (KHTML, like Gecko)  Chrome/52.0.2211.318 Mobile Safari/603.3',
     'Mozilla/5.0 (iPhone; CPU iPhone OS 10_1_5; like Mac OS X) AppleWebKit/600.11 (KHTML, like Gecko)  Chrome/53.0.1798.111 Mobile Safari/602.3',
@@ -51,10 +56,10 @@ async function main() {
         let encodedParam = encodeURIComponent(brand);
         let url = `https://amazon.com/s?k=${encodedParam}&ref=nb_sb_noss_2`;
         await crawl(url, brand);
-        console.log(`Done crawling ${brand}`);
         await axios.post('https://script.google.com/macros/s/AKfycbzwrqVcjppFwVz8kPdY2WYImNm7jufs1f5xywjXLVNJm9y6gwzHXyvfqt8gmrR54LaB/exec', {
             brands: brandsWithTotal
-        })
+        }); 
+        sleep(1000);
     }
 
 }
@@ -88,13 +93,14 @@ async function crawlProductPage(url, brand) {
     }).then(async res => {
         const $ = await cheerio.load(res.data);
         let storeFrontURL = $('#sellerProfileTriggerId').attr('href');
-        console.log(`SFR: '${storeFrontURL}'`);
         if(storeFrontURL === undefined) {
             return
         }
-        // if (!storeFrontURL) {
-        //     await crawlProductPage(url, brand)
-        // }
+        if (!storeFrontURL) {
+            sleep(1000);
+            await crawlProductPage(url, brand);
+            return;
+        }
         
         await axios.get('https://www.amazon.com' + storeFrontURL, {
             'headers': {
@@ -104,10 +110,11 @@ async function crawlProductPage(url, brand) {
         }).then(async res => {
             const $ = await cheerio.load(res.data);
             let finalStorefrontURL = 'https://www.amazon.com' + $('#seller-info-storefront-link').find('a').attr('href');
-            console.log(`FSFR: '${finalStorefrontURL}'`);
-            // if (!finalStorefrontURL) {
-            //     await crawlProductPage(url, brand)
-            // }
+            if (!finalStorefrontURL) {
+                sleep(1000);
+                await crawlProductPage(url, brand);
+                return;
+            }
             await axios.get(finalStorefrontURL, {
                 'headers': {
                     'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
