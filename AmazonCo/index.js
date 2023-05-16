@@ -40,7 +40,7 @@ let userAgents = [
 ];
 let brandsWithTotal = [];
 async function main() {
-    let brands = await axios.get('https://script.google.com/macros/s/AKfycbxj5911P2iSKKYchqo98ryI8F_fAopvUrd00bqlzDw--IhIOfCJu9T4gIgb0wuLKdxv/exec').then(res => res.data.brands);
+    let brands = await axios.get('https://script.google.com/macros/s/AKfycbyehbn2Ly5-PlqQ0bju8HgOGibO2XsSPE8dTA1c78WkiaiROhVWJtNdRX28H5iaAIvS/exec').then(res => res.data.brands);
     let newBrands = [];
     for (let brandInx = 0; brandInx < brands.length; brandInx++) {
         if (newBrands.indexOf(brands[brandInx][0]) === -1) {
@@ -58,7 +58,7 @@ async function main() {
             await crawl(url, brand);
         }
         console.log(`Attempting to save ${brand} to Sheet`);
-            await axios.post('https://script.google.com/macros/s/AKfycbxj5911P2iSKKYchqo98ryI8F_fAopvUrd00bqlzDw--IhIOfCJu9T4gIgb0wuLKdxv/exec', {
+            await axios.post('https://script.google.com/macros/s/AKfycbyehbn2Ly5-PlqQ0bju8HgOGibO2XsSPE8dTA1c78WkiaiROhVWJtNdRX28H5iaAIvS/exec', {
             brands: brandsWithTotal
         })
     }
