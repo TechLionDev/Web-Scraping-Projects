@@ -51,16 +51,20 @@ async function main() {
         let encodedParam = encodeURIComponent(brand);
         let url = `https://amazon.com/s?k=${encodedParam}`;
         try {
-            console.log(`Attempting to crawl ${brand}`);
+            console.log(`↻ Attempting to crawl ${brand}`);
             await crawl(url, brand);
         } catch (error) {
-            console.log(`Failed to crawl ${brand}, Trying again...`);
+            console.log(`⬣ Failed to crawl ${brand}, Trying again...`);
             await crawl(url, brand);
         }
-        console.log(`Attempting to save ${brand} to Sheet`);
+        console.log(`↻ Attempting to save ${brand} to Sheet`);
+        try {
             await axios.post('https://script.google.com/macros/s/AKfycbyehbn2Ly5-PlqQ0bju8HgOGibO2XsSPE8dTA1c78WkiaiROhVWJtNdRX28H5iaAIvS/exec', {
             brands: brandsWithTotal
         })
+        } catch (error) {
+           console.log(`⬣ Failed to save ${brand} to Sheet`); 
+        }
     }
 
 }
@@ -101,7 +105,7 @@ async function crawlProductPage(url, brand, prevLink) {
         if (storeFrontURL.includes('undefined')) {
             await crawl(prevLink, brand);
         }
-        await getStoreFrontLandingPage( storeFrontURL, brand, url);
+        await getStoreFrontLandingPage(storeFrontURL, brand, url);
     }).catch(err => {
 
     })
@@ -145,7 +149,7 @@ async function getTotalNumberOfProducts(finalPage, brand) {
                 await crawlProductPage(finalPage, brand);
             }
             console.log(`---------------------------------------------`);
-            console.log(`Found ${results[1]} Products Sold By ${brand}`);
+            console.log(`✓ Found ${results[1]} Products Sold By ${brand}`);
             console.log(`---------------------------------------------`);
             brandsWithTotal.push({
                 name: brand,
@@ -164,7 +168,7 @@ async function getTotalNumberOfProducts(finalPage, brand) {
             let regex1 = /(\d+,?\d+) results/
             let results = resultsText.match(regex1);
             console.log(`---------------------------------------------`);
-            console.log(`Found ${results[1]} Products Sold By ${brand}`);
+            console.log(`✓ Found ${results[1]} Products Sold By ${brand}`);
             console.log(`---------------------------------------------`);
             brandsWithTotal.push({
                 name: brand,
