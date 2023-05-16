@@ -57,16 +57,16 @@ async function main() {
             console.log(`⬣ Failed to crawl ${brand}, Trying again...`);
             await crawl(url, brand);
         }
-        console.log(`↻ Attempting to save ${brand} to Sheet`);
+        
         try {
+            console.log(`↻ Attempting to save ${brand} to Sheet`);
             await axios.post('https://script.google.com/macros/s/AKfycbyehbn2Ly5-PlqQ0bju8HgOGibO2XsSPE8dTA1c78WkiaiROhVWJtNdRX28H5iaAIvS/exec', {
             brands: brandsWithTotal
         })
         } catch (error) {
-           console.log(`⬣ Failed to save ${brand} to Sheet`); 
+           console.log(`⬣ Failed to save ${brand} to Sheet`);
         }
     }
-
 }
 
 async function crawl(url, brand) {
