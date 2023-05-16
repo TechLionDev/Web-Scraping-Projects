@@ -1,11 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-function sleep(delay) {
-    var start = new Date().getTime();
-    while (new Date().getTime() < start + delay);
-}
-
 let userAgents = [
     'Mozilla/5.0 (iPhone; CPU iPhone OS 8_4_9; like Mac OS X) AppleWebKit/603.33 (KHTML, like Gecko)  Chrome/52.0.2211.318 Mobile Safari/603.3',
     'Mozilla/5.0 (iPhone; CPU iPhone OS 10_1_5; like Mac OS X) AppleWebKit/600.11 (KHTML, like Gecko)  Chrome/53.0.1798.111 Mobile Safari/602.3',
@@ -45,7 +40,7 @@ let userAgents = [
 ];
 let brandsWithTotal = [];
 async function main() {
-    let brands = await axios.get('https://script.google.com/macros/s/AKfycbzwrqVcjppFwVz8kPdY2WYImNm7jufs1f5xywjXLVNJm9y6gwzHXyvfqt8gmrR54LaB/exec').then(res => res.data.brands.sort());
+    let brands = await axios.get('https://script.google.com/macros/s/AKfycbxj5911P2iSKKYchqo98ryI8F_fAopvUrd00bqlzDw--IhIOfCJu9T4gIgb0wuLKdxv/exec').then(res => res.data.brands);
     let newBrands = [];
     for (let brandInx = 0; brandInx < brands.length; brandInx++) {
         if (newBrands.indexOf(brands[brandInx][0]) === -1) {
@@ -54,12 +49,18 @@ async function main() {
     }
     for (let brand of newBrands) {
         let encodedParam = encodeURIComponent(brand);
-        let url = `https://amazon.com/s?k=${encodedParam}&ref=nb_sb_noss_2`;
-        await crawl(url, brand);
-        await axios.post('https://script.google.com/macros/s/AKfycbzwrqVcjppFwVz8kPdY2WYImNm7jufs1f5xywjXLVNJm9y6gwzHXyvfqt8gmrR54LaB/exec', {
+        let url = `https://amazon.com/s?k=${encodedParam}`;
+        try {
+            console.log(`Attempting to crawl ${brand}`);
+            await crawl(url, brand);
+        } catch (error) {
+            console.log(`Failed to crawl ${brand}, Trying again...`);
+            await crawl(url, brand);
+        }
+        console.log(`Attempting to save ${brand} to Sheet`);
+            await axios.post('https://script.google.com/macros/s/AKfycbxj5911P2iSKKYchqo98ryI8F_fAopvUrd00bqlzDw--IhIOfCJu9T4gIgb0wuLKdxv/exec', {
             brands: brandsWithTotal
-        }); 
-        sleep(1000);
+        })
     }
 
 }
@@ -72,19 +73,23 @@ async function crawl(url, brand) {
         },
         timeout: 30000
     }).then(async res => {
-        let $ = await cheerio.load(res.data);
-        await $('div[data-component-type="s-search-result"]').each(async (i, el) => {
-            let productURL = await $(el).find('a.a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal').attr('href');
+        let $ = cheerio.load(res.data);
+        $('div[data-component-type="s-search-result"]').each(async (i, el) => {
+            let productURL = $(el).find('a:first').attr('href');
             productURLs.push('https://www.amazon.com' + productURL);
         });
-        await crawlProductPage(productURLs[0], brand);
+        let productPage = productURLs[Math.floor(Math.random() * productURLs.length)];
+        do {
+            productPage = productURLs[Math.floor(Math.random() * productURLs.length)];
+        } while (productPage === undefined || productPage === null || productPage.includes('picassoRedirect'));
+        await crawlProductPage(productPage, brand, url);
 
     }).catch(err => {
 
     })
 }
 
-async function crawlProductPage(url, brand) {
+async function crawlProductPage(url, brand, prevLink) {
     await axios.get(url, {
         'headers': {
             'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
@@ -92,55 +97,81 @@ async function crawlProductPage(url, brand) {
         timeout: 30000
     }).then(async res => {
         const $ = await cheerio.load(res.data);
-        let storeFrontURL = $('#sellerProfileTriggerId').attr('href');
-        if(storeFrontURL === undefined) {
-            return
+        let storeFrontURL = 'https://www.amazon.com' + $('a[id="sellerProfileTriggerId"]').attr('href');
+        if (storeFrontURL.includes('undefined')) {
+            await crawl(prevLink, brand);
         }
-        if (!storeFrontURL) {
-            sleep(1000);
-            await crawlProductPage(url, brand);
-            return;
-        }
-        
-        await axios.get('https://www.amazon.com' + storeFrontURL, {
-            'headers': {
-                'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
-            },
-            timeout: 30000
-        }).then(async res => {
-            const $ = await cheerio.load(res.data);
-            let finalStorefrontURL = 'https://www.amazon.com' + $('#seller-info-storefront-link').find('a').attr('href');
-            if (!finalStorefrontURL) {
-                sleep(1000);
-                await crawlProductPage(url, brand);
-                return;
-            }
-            await axios.get(finalStorefrontURL, {
-                'headers': {
-                    'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
-                },
-                timeout: 30000
-            }).then(async res => {
-                const $ = await cheerio.load(res.data);
-                let txt = $('#search > span > div > h1 > div > div.sg-col-14-of-20.sg-col-18-of-24.sg-col.s-breadcrumb.sg-col-10-of-16.sg-col-6-of-12 > div > div > span').text();
-                const regex = /(\d+) results/;
-                const match = txt.match(regex);
-                if (match) {
-                    const totalNumOfItems = parseInt(match[1], 10);
-                    console.log(`Found ${totalNumOfItems} results for ${brand}`);
-                    brandsWithTotal.push({
-                        name: brand,
-                        total: totalNumOfItems
-                    })
-                } else {
-                    await crawlProductPage(url, brand)
-                }
-            })
-        })
+        await getStoreFrontLandingPage( storeFrontURL, brand, url);
     }).catch(err => {
 
     })
+}
 
+
+async function getStoreFrontLandingPage(storeFrontURL, brand, prevLink) {
+    await axios.get(storeFrontURL, {
+        'headers': {
+            'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
+        },
+        timeout: 30000
+    }).then(async res => {
+        const $ = await cheerio.load(res.data);
+        let finalPage = 'https://www.amazon.com' + $('span[data-action="spp-page-link-action"] > a').attr('href');
+        if (finalPage.includes('undefined')) {
+            await crawlProductPage(prevLink, brand);
+        }
+        await getTotalNumberOfProducts(finalPage, brand);
+    })
+}
+
+async function getTotalNumberOfProducts(finalPage, brand) {
+    try {
+        await axios.get(finalPage, {
+            'headers': {
+                'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
+            },
+        }).then(async res => {
+            const $ = await cheerio.load(res.data);
+            let resultsText = $('div.a-section.a-spacing-small.a-spacing-top-small').text();
+            let regex1 = /(\d+,?\d+) results/
+            let results = resultsText.match(regex1);
+            if (results[1] === null) {
+                await getTotalNumberOfProducts(finalPage, brand);
+            }
+            if (results[1] === undefined) {
+                await crawlProductPage(finalPage, brand);
+            }
+            if (results[1] === '') {
+                await crawlProductPage(finalPage, brand);
+            }
+            console.log(`---------------------------------------------`);
+            console.log(`Found ${results[1]} Products Sold By ${brand}`);
+            console.log(`---------------------------------------------`);
+            brandsWithTotal.push({
+                name: brand,
+                total: results[1]
+            });
+        })
+    }
+    catch (err) {
+        await axios.get(finalPage, {
+            'headers': {
+                'User-Agent': userAgents[Math.floor(Math.random() * userAgents.length)]
+            },
+        }).then(async res => {
+            const $ = await cheerio.load(res.data);
+            let resultsText = $('div.a-section.a-spacing-small.a-spacing-top-small').text();
+            let regex1 = /(\d+,?\d+) results/
+            let results = resultsText.match(regex1);
+            console.log(`---------------------------------------------`);
+            console.log(`Found ${results[1]} Products Sold By ${brand}`);
+            console.log(`---------------------------------------------`);
+            brandsWithTotal.push({
+                name: brand,
+                total: results[1]
+            });
+        })
+    }
 }
 
 main();
