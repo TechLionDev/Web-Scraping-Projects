@@ -1,5 +1,6 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const clc = require("cli-color");
 
 let userAgents = [
     'Mozilla/5.0 (iPhone; CPU iPhone OS 8_4_9; like Mac OS X) AppleWebKit/603.33 (KHTML, like Gecko)  Chrome/52.0.2211.318 Mobile Safari/603.3',
@@ -39,8 +40,13 @@ let userAgents = [
     'Mozilla / 5.0(compatible; MSIE 9.0; Windows; Windows NT 10.3; Win64; x64; en - US Trident / 5.0) '
 ];
 let brandsWithTotal = [];
+const error = clc.red.bold;
+const info = clc.cyan.bold;
+const success = clc.green.bold;
 async function main() {
+    console.log(info('(i) Collecting Brands to Crawl...'));
     let brands = await axios.get('https://script.google.com/macros/s/AKfycbyehbn2Ly5-PlqQ0bju8HgOGibO2XsSPE8dTA1c78WkiaiROhVWJtNdRX28H5iaAIvS/exec').then(res => res.data.brands);
+    console.log(success(`(✓) Collected ${brands.length} Brands Successfully!`));
     let newBrands = [];
     for (let brandInx = 0; brandInx < brands.length; brandInx++) {
         if (newBrands.indexOf(brands[brandInx][0]) === -1) {
@@ -51,20 +57,21 @@ async function main() {
         let encodedParam = encodeURIComponent(brand);
         let url = `https://amazon.com/s?k=${encodedParam}`;
         try {
-            console.log(`↻ Attempting to crawl ${brand}`);
+            console.log(info(`(i) Crawling ${brand}...`));
             await crawl(url, brand);
         } catch (error) {
-            console.log(`⬣ Failed to crawl ${brand}, Trying again...`);
+            console.log(error(`(⬣) Failed to crawl ${brand}, Trying again...`));
             await crawl(url, brand);
         }
         
         try {
-            console.log(`↻ Attempting to save ${brand} to Sheet`);
+            console.log(info(`(i) Saving ${brand} to Sheet`));
             await axios.post('https://script.google.com/macros/s/AKfycbyehbn2Ly5-PlqQ0bju8HgOGibO2XsSPE8dTA1c78WkiaiROhVWJtNdRX28H5iaAIvS/exec', {
             brands: brandsWithTotal
-        })
-        } catch (error) {
-           console.log(`⬣ Failed to save ${brand} to Sheet`);
+            })
+            console.log(success(`(✓) Saved ${brand} to Sheet Successfully!`));
+        } catch (err) {
+           console.log(error(`(⬣) Failed to save ${brand} to Sheet`));
         }
     }
 }
@@ -148,9 +155,9 @@ async function getTotalNumberOfProducts(finalPage, brand) {
             if (results[1] === '') {
                 await crawlProductPage(finalPage, brand);
             }
-            console.log(`---------------------------------------------`);
-            console.log(`✓ Found ${results[1]} Products Sold By ${brand}`);
-            console.log(`---------------------------------------------`);
+            console.log(success(`---------------------------------------------`));
+            console.log(success(`(✓) Found ${results[1]} Products Sold By ${brand}`));
+            console.log(success(`---------------------------------------------`));
             brandsWithTotal.push({
                 name: brand,
                 total: results[1]
@@ -167,9 +174,9 @@ async function getTotalNumberOfProducts(finalPage, brand) {
             let resultsText = $('div.a-section.a-spacing-small.a-spacing-top-small').text();
             let regex1 = /(\d+,?\d+) results/
             let results = resultsText.match(regex1);
-            console.log(`---------------------------------------------`);
-            console.log(`✓ Found ${results[1]} Products Sold By ${brand}`);
-            console.log(`---------------------------------------------`);
+            console.log(success(`---------------------------------------------`));
+            console.log(success(`(✓) Found ${results[1]} Products Sold By ${brand}`));
+            console.log(success(`---------------------------------------------`));
             brandsWithTotal.push({
                 name: brand,
                 total: results[1]
