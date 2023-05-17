@@ -44,9 +44,9 @@ const error = clc.red.bold;
 const info = clc.cyan.bold;
 const success = clc.green.bold;
 async function main() {
-    console.log(info('(i) Collecting Brands to Crawl...'));
+    console.log(info('(i) Collecting Brands to Crawl...\n'));
     let brands = await axios.get('https://script.google.com/macros/s/AKfycbyehbn2Ly5-PlqQ0bju8HgOGibO2XsSPE8dTA1c78WkiaiROhVWJtNdRX28H5iaAIvS/exec').then(res => res.data.brands);
-    console.log(success(`(✓) Collected ${brands.length} Brands Successfully!`));
+    console.log(success(`(✓) Collected ${brands.length} Brands Successfully!\n`));
     let newBrands = [];
     for (let brandInx = 0; brandInx < brands.length; brandInx++) {
         if (newBrands.indexOf(brands[brandInx][0]) === -1) {
@@ -57,21 +57,21 @@ async function main() {
         let encodedParam = encodeURIComponent(brand);
         let url = `https://amazon.com/s?k=${encodedParam}`;
         try {
-            console.log(info(`(i) Crawling ${brand}...`));
+            console.log(info(`(i) Crawling ${brand}...\n`));
             await crawl(url, brand);
         } catch (error) {
-            console.log(error(`(⬣) Failed to crawl ${brand}, Trying again...`));
+            console.log(error(`(⬣) Failed to crawl ${brand}, Trying again...\n`));
             await crawl(url, brand);
         }
         
         try {
-            console.log(info(`(i) Saving ${brand} to Sheet`));
+            console.log(info(`(i) Saving ${brand} to Sheet\n`));
             await axios.post('https://script.google.com/macros/s/AKfycbyehbn2Ly5-PlqQ0bju8HgOGibO2XsSPE8dTA1c78WkiaiROhVWJtNdRX28H5iaAIvS/exec', {
             brands: brandsWithTotal
             })
-            console.log(success(`(✓) Saved ${brand} to Sheet Successfully!`));
+            console.log(success(`(✓) Saved ${brand} to Sheet Successfully!\n`));
         } catch (err) {
-           console.log(error(`(⬣) Failed to save ${brand} to Sheet`));
+           console.log(error(`(⬣) Failed to save ${brand} to Sheet\n`));
         }
     }
 }
@@ -157,7 +157,7 @@ async function getTotalNumberOfProducts(finalPage, brand) {
             }
             console.log(success(`---------------------------------------------`));
             console.log(success(`(✓) Found ${results[1]} Products Sold By ${brand}`));
-            console.log(success(`---------------------------------------------`));
+            console.log(success(`---------------------------------------------\n`));
             brandsWithTotal.push({
                 name: brand,
                 total: results[1]
@@ -176,7 +176,7 @@ async function getTotalNumberOfProducts(finalPage, brand) {
             let results = resultsText.match(regex1);
             console.log(success(`---------------------------------------------`));
             console.log(success(`(✓) Found ${results[1]} Products Sold By ${brand}`));
-            console.log(success(`---------------------------------------------`));
+            console.log(success(`---------------------------------------------\n`));
             brandsWithTotal.push({
                 name: brand,
                 total: results[1]
