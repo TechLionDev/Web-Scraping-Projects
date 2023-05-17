@@ -57,7 +57,7 @@ async function main() {
         let encodedParam = encodeURIComponent(brand);
         let url = `https://amazon.com/s?k=${encodedParam}`;
         try {
-            console.log(info(`(i) Crawling ${brand}...\n`));
+            console.log(info(`(i) Crawling ${brand} | ${newBrands.indexOf(brand) + 1}of ${newBrands.length}...\n`));
             await crawl(url, brand);
         } catch (error) {
             console.log(error(`(⬣) Failed to crawl ${brand}, Trying again...\n`));
