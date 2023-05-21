@@ -1,2 +1,2 @@
 #!/bin/bash
-clear && node --max-old-space-size=16384 saveToJSON.js && node --max-old-space-size=16384 JSONtoXLSX.js
+clear && node --max-old-space-size=12288 saveToJSON.js && node --max-old-space-size=12288 JSONtoXLSX.js
